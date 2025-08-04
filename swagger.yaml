@@ -1,0 +1,553 @@
+openapi: 3.0.3
+info:
+  title: Gbono
+  description: >-
+    # Gbono api documentation
+  version: 1.0.0
+  contact: { email: ammuftau74@gmail.com }
+
+servers:
+  - url: https://gbono-api.onrender.com/api/v1
+    description: This is the original api URL
+  - url: http://localhost:9000/api/v1
+    description: This is my local Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+security:
+  - bearerAuth: []
+
+paths:
+  /moments:
+    get:
+      tags:
+        - 🔄 General
+      summary: Get moments
+      description: >-
+        The API endpoint retrieves all moments.
+      operationId: getallmoments
+      parameters:
+        - name: search
+          in: query
+          description: Search by caption.
+          schema:
+            type: string
+            example: Hello
+        - name: date
+          in: query
+          description: Search by date.
+          schema:
+            type: string
+            example: 2025-07-24
+        - name: type
+          in: query
+          description: Search type.
+          schema:
+            type: string
+            enum: ['image', 'video']
+            example: image
+        - name: page
+          in: query
+          schema:
+            type: string
+            example: '1'
+        - name: limit
+          in: query
+          schema:
+            type: string
+            example: '10'
+      responses:
+        '200':
+          description: Get moments
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '1126'
+            Date:
+              schema:
+                type: string
+                example: Thu, 01 Jun 2023 05:44:27 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"466-tNv1SNtB6cuxJH2yZW7lrDnlA34"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: Moments fetched successfully
+                  success:
+                    type: boolean
+                    example: true
+  /moments/gallery:
+    get:
+      tags:
+        - 🔄 General
+      summary: Get moments images
+      description: >-
+        The API endpoint retrieves all moment images.
+      operationId: getmomemtimages
+      responses:
+        '200':
+          description: Get moment Images
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '1126'
+            Date:
+              schema:
+                type: string
+                example: Thu, 01 Jun 2023 05:44:27 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"466-tNv1SNtB6cuxJH2yZW7lrDnlA34"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: moments images fetched successfully
+                  success:
+                    type: boolean
+                    example: true
+  /moments/videos:
+    get:
+      tags:
+        - 🔄 General
+      summary: Get moments
+      description: >-
+        The API endpoint retrieves all moments videos.
+      operationId: getmomentVideos
+      responses:
+        '200':
+          description: Get moment Videos
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '1126'
+            Date:
+              schema:
+                type: string
+                example: Thu, 01 Jun 2023 05:44:27 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"466-tNv1SNtB6cuxJH2yZW7lrDnlA34"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: Moment videos fetched successfully
+                  success:
+                    type: boolean
+                    example: true
+  /moments/upload-image:
+    post:
+      tags:
+        - 🔄 General
+      summary: Upload moment
+      description: >-
+        The API endpoint enables users to upload moments.
+      operationId: uploadMoment
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  description: File
+                  type: string
+                  format: binary
+                caption:
+                  type: string
+                  example: hello world
+      responses:
+        '200':
+          description: Upload moment
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '910'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:45:46 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"38e-+vTTKQiTCppZaCs9tEWJWWsmzZI"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '490'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '572'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: Moment uploaded successfully
+  /moments/upload-images:
+    post:
+      tags:
+        - 🔄 General
+      summary: Upload moment images
+      description: >-
+        The API endpoint enables users to upload moment images.
+      operationId: uploadMomentImages
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    description: File
+                    type: string
+                    format: binary
+                caption:
+                  type: string
+                  example: hello world
+      responses:
+        '200':
+          description: Upload moment images
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '910'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:45:46 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"38e-+vTTKQiTCppZaCs9tEWJWWsmzZI"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '490'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '572'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: Moment images uploaded successfully
+  /moments/upload-video:
+    post:
+      tags:
+        - 🔄 General
+      summary: Upload moment video
+      description: >-
+        The API endpoint enables users to upload video moments.
+      operationId: uploadMomentVideo
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video:
+                  description: File
+                  type: string
+                  format: binary
+                caption:
+                  type: string
+                  example: hello world
+      responses:
+        '200':
+          description: Upload moment video
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '910'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:45:46 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"38e-+vTTKQiTCppZaCs9tEWJWWsmzZI"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '490'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '572'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: Moment video uploaded successfully
+  /moments/uploads:
+    post:
+      tags:
+        - 🔄 General
+      summary: Upload moment
+      description: >-
+        The API endpoint enables users to upload multiple moments.
+      operationId: uploadMultipleMoment
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                files:
+                  type: array
+                  items:
+                    description: File
+                    type: string
+                    format: binary
+                caption:
+                  type: string
+                  example: hello world
+      responses:
+        '200':
+          description: Upload multiple moment
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '910'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:45:46 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"38e-+vTTKQiTCppZaCs9tEWJWWsmzZI"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '490'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '572'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: Multiple moment uploaded successfully
+  tags:
+    - name: 🔐 Authentication
+      description: >-
+        This section encompasses all the APIs related to user authentication.
+    - name: 🔄 General
+      description: >-
+        This section encompasses all other APIs.
