@@ -1,13 +1,17 @@
+
+import Donor from '../models/Donor.js';
+import Hospital from '../models/Hospital.js';
+import africastalking from 'africastalking';
 // This is a mock implementation - in a real app you would integrate with an SMS gateway
 export const sendSMS = async (phoneNumber, message) => {
 	console.log(`Sending SMS to ${phoneNumber}: ${message}`);
 	// In production, you would use a service like Twilio, Africa's Talking, etc.
 	// Example with Africa's Talking:
-	/*
-    const africastalking = require('africastalking')({
-      apiKey: process.env.AT_API_KEY,
-      username: process.env.AT_USERNAME,
-    });
+	
+    const africastalking = africastalking({
+			apiKey: process.env.AT_API_KEY,
+			username: process.env.AT_USERNAME,
+		});
     
     try {
       await africastalking.SMS.send({
@@ -17,7 +21,7 @@ export const sendSMS = async (phoneNumber, message) => {
     } catch (error) {
       console.error('Error sending SMS:', error);
     }
-    */
+    
 
 	return { success: true };
 };

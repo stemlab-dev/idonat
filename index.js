@@ -25,9 +25,8 @@ import bloodRequestRoutes from './routes/bloodRequest.js';
 import leaderboardRoutes from './routes/leaderboard.js';
 import squadRoutes from './routes/squad.js';
 import { matchDonorsToRequests } from './services/aiService.js';
-import errorHandler from './middleware/errorHandler.js';
-
-
+import errorHandler from './middleware/errorHandler.js'; // In your app.js or server entry point
+import chatRoutes from './routes/chat.js';
 
 // setups
 const __filename = fileURLToPath(import.meta.url);
@@ -92,15 +91,16 @@ app.use(passport.session()); // persistent login sessions
 // app.use('/api/v1/admins', adminRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/moments', momentRoutes);
-app.use('/api/donors', donorRoutes);
-app.use('/api/hospitals', hospitalRoutes);
-app.use('/api/leaderboard', leaderboardRoutes);
-app.use('/api/squads', squadRoutes);
-app.use('/api/blood-requests', bloodRequestRoutes);
+app.use('/api/v1/donors', donorRoutes);
+app.use('/api/v1/hospitals', hospitalRoutes);
+app.use('/api/v1/leaderboard', leaderboardRoutes);
+app.use('/api/v1/squads', squadRoutes);
+app.use('/api/v1/blood-requests', bloodRequestRoutes);
+app.use('/api/v1/chats', chatRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'healthy' });
+	res.status(200).json({ status: 'healthy' });
 });
 
 // * API DOCS
@@ -128,5 +128,4 @@ mongoose
 	.then(() => {
 		app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
 	})
-	.catch((error) => console.log(`${error} did not connect`))
-;
+	.catch((error) => console.log(`${error} did not connect`));
