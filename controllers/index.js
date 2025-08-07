@@ -22,3 +22,22 @@ export const getUserDashboard = async (req, res) => {
 		res.status(500).json({ message: error.message });
 	}
 };
+export const getAdminDashboard = async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		const squad = await Squad.findOne({
+			user: userId,
+		});
+		const donor = await Donor.findOne({
+			user: userId,
+		});
+		const userAchievements = await UserAchievement.findOne({
+			user: userId,
+		}).populate('achievement');
+
+		res.json({ userAchievements, squad, donor });
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};

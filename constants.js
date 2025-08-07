@@ -4,13 +4,8 @@
 export const UserRolesEnum = {
 	SUPER_ADMIN: 'SUPER_ADMIN',
 	ADMIN: 'ADMIN',
-	TEACHER: 'TEACHER',
-	STUDENT: 'STUDENT',
-	SCHOOL: 'SCHOOL',
-	ADMIN: 'ADMIN',
+	HOSPITAL: 'HOSPITAL',
 	USER: 'USER',
-	PUBLISHER: 'PUBLISHER',
-	AUTHOR: 'AUTHOR'
 };
 
 export const AvailableUserRoles = Object.values(UserRolesEnum);
@@ -25,6 +20,5 @@ export const UserLoginType = {
 };
 
 export const AvailableSocialLogins = Object.values(UserLoginType);
-
 
 export const USER_TEMPORARY_TOKEN_EXPIRY = 20 * 60 * 1000; // 20 minutes

@@ -1,3 +1,8 @@
+import mongoose from 'mongoose';
+import Donor from '../models/Donor.js';
+import User from '../models/User.js';
+import Squad from '../models/Squad.js';
+import UserAchievement from '../models/UserAchievment.js';
 import Hospital from '../models/Hospital.js';
 import BloodRequest from '../models/BloodRequest.js';
 import { predictShortage } from '../services/aiService.js';
@@ -20,6 +25,26 @@ export const registerHospital = async (req, res) => {
 
 		await hospital.save();
 		res.status(201).json(hospital);
+	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+
+export const getHospitalDashboard = async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		const squad = await Squad.findOne({
+			user: userId,
+		});
+		const donor = await Donor.findOne({
+			user: userId,
+		});
+		const userAchievements = await UserAchievement.findOne({
+			user: userId,
+		}).populate('achievement');
+
+		res.json({ userAchievements, squad, donor });
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}

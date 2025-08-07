@@ -100,12 +100,14 @@ router.patch('/profile', requireAuth, upload.single('avatar'), updateProfile);
 router.delete('/delete-account', requireAuth, deleteUser);
 
 // admin roles
-router.get('/', requireAuth, verifyPermission(['ADMIN']), getUsers);
+router.get('/', requireAuth,
+	verifyPermission(['ADMIN', 'SUPERADMIN']),
+	getUsers);
 router.post(
-	'/assign-role/:id',
+	'/assign-role/:userId',
 	userAssignRoleValidator,
 	requireAuth,
-	verifyPermission(['ADMIN']),
+	verifyPermission(['ADMIN', 'SUPERADMIN']),
 	assignRole
 );
 

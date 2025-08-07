@@ -605,8 +605,9 @@ export const updateAvatar = async (req, res) => {
 // // // Update user with image
 export const updateProfile = async (req, res) => {
 	try {
+		// console.log('req........body', req.body);
 		const { name, phone, email } = req.body;
-		const { id: _id } = req.user;
+		const id = req.user._id;
 		// Define the fields that users are disallowed to update here
 		const disAllowedFields = ['password', 'role'];
 		// Check if request body contains only allowed fields
@@ -645,13 +646,13 @@ export const updateProfile = async (req, res) => {
 				{ ...req.body },
 				{ new: true }
 			);
-			await fs.unlinkSync(req.file.path);
 			return res.status(200).json({
 				user,
 				message: 'User profile updated successfully',
 			});
 		}
 	} catch (error) {
+		console.log('error', error);
 		if (req.file) {
 			fs.unlinkSync(req.file.path);
 		}
@@ -694,6 +695,9 @@ export const getUsers = async (req, res) => {
 export const assignRole = asyncHandler(async (req, res) => {
 	const { userId } = req.params;
 	const { role } = req.body;
+	if (!userId) {
+		throw new ApiError(404, 'userId is req exist');
+	}
 	const user = await User.findById(userId);
 
 	if (!user) {
@@ -702,9 +706,7 @@ export const assignRole = asyncHandler(async (req, res) => {
 	user.role = role;
 	await user.save({ validateBeforeSave: false });
 
-	return res
-		.status(200)
-		.json(new ApiResponse(200, {}, 'Role changed for the user'));
+	return res.status(200).json({ message: 'Role changed for the user' });
 });
 
 export const handleSocialLogin = asyncHandler(async (req, res) => {

@@ -194,12 +194,12 @@ paths:
               properties:
                 email:
                   type: string
-                  example: student111@gmail.com
+                  example: user@gmail.com
                 password:
                   type: string
                   example: '123456'
             example:
-              email: student111@gmail.com
+              email: user@gmail.com
               password: '123456'
       responses:
         '201':
@@ -1505,28 +1505,27 @@ paths:
         By accessing this endpoint and providing the necessary parameters, users
         can upload a new image file for their desired avatar.
       operationId: updateUserProfile
-      consumes:
-        - multipart/form-data
-      parameters:
-        - in: formData
-          name: file
-          type: file
-          # required: true
-          description: The file to upload.
-        - in: formData
-          name: name
-          type: string
-          required: true
-          description: user full name.
-        - in: formData
-          name: phone
-          type: string
-          required: true
-          description: User phone.
-        - in: formData
-          name: email
-          type: string
-          description: User email.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: The file to upload.
+                name:
+                  type: string
+                  required: true
+                  description: user full name.
+                phone:
+                  type: string
+                  required: true
+                  description: User phone.
+                email:
+                  type: string
+                  description: User email.
       responses:
         '200':
           description: Update Profile
@@ -1667,6 +1666,76 @@ paths:
                       name: doejohn
                     message: Profile updated successfully
                     success: true
+  /users:
+    get:
+      tags:
+        - 🔄 General
+      summary: get all users
+      description: >-
+        The API endpoint allows to get general user.
+      operationId: getGeneralUsers
+      responses:
+        '201':
+          description: get general user
+          headers:
+            Access-Control-Allow-Credentials:
+              schema:
+                type: string
+                example: 'true'
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Content-Length:
+              schema:
+                type: string
+                example: '500'
+            Date:
+              schema:
+                type: string
+                example: Fri, 30 Jun 2023 06:44:09 GMT
+            ETag:
+              schema:
+                type: string
+                example: W/"1f4-1q38Sbu25p0UVmeYQmrEv2VrgPg"
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+            RateLimit-Limit:
+              schema:
+                type: string
+                example: '500'
+            RateLimit-Remaining:
+              schema:
+                type: string
+                example: '495'
+            RateLimit-Reset:
+              schema:
+                type: string
+                example: '772'
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                  message:
+                    type: string
+                    example: >-
+                      Users fetched successfully.
+                  success:
+                    type: boolean
+                    example: true
   /chats:
     get:
       tags:
