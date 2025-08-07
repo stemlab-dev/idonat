@@ -9,6 +9,12 @@ const UserSchema = new mongoose.Schema(
 			min: 2,
 			max: 100,
 		},
+		phone: {
+			type: String,
+			unique: true,
+			required: true,
+			min: 9,
+		},
 		email: {
 			type: String,
 			max: 50,
@@ -18,10 +24,6 @@ const UserSchema = new mongoose.Schema(
 			required: true,
 			min: 5,
 		},
-		phone: {
-			type: String,
-			min: 9,
-		},
 		avatar: {
 			public_id: {
 				type: String,
@@ -29,6 +31,10 @@ const UserSchema = new mongoose.Schema(
 			url: {
 				type: String,
 			},
+		},
+		inforCompleted: {
+			type: Number,
+			default: 0,
 		},
 		role: {
 			type: String,

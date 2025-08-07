@@ -1,20 +1,40 @@
+import mongoose from 'mongoose';
 import Donor from '../models/Donor.js';
+import User from '../models/User.js';
+import NextOfKin from '../models/NextOfKin.js';
 import { sendSMS } from '../services/notification.js';
 
 // Register a new donor
-export const registerDonor = async (req, res) => {
+export const addDonor = async (req, res) => {
+	const session = await mongoose.startSession();
+	session.startTransaction();
 	try {
-		const { name, phone, bloodType, location } = req.body;
+		const { name, phone, email, bloodType, location, nextOfKins } = req.body;
 
-		const existingDonor = await Donor.findOne({ phone });
-		if (existingDonor) {
-			return res
-				.status(400)
-				.json({ message: 'Donor already registered with this phone number' });
+		const existingUser = await User.findOne({ phone });
+
+		// To handle the 409 status code, typically indicating a conflict, you might want to implement it in scenarios where there's a conflict with the current state of the resource.
+		// For example, if you're trying to create a new user with an email or username that already exists, it would result in a conflict.
+		if (existingUser) {
+			return res.status(409).json({ error: 'Phone already Exists' });
 		}
 
-		const donor = new Donor({
+		const hashedPassword = await hash(password);
+
+		const user = await User.create({
 			name,
+			email,
+			phone,
+			password: hashedPassword,
+			role: 'USER',
+		});
+		const nextOfKin = await NextOfKin.create({
+			userId: user._id,
+			contacts: nextOfKins,
+		});
+
+		const donor = new Donor({
+			userId: user._id,
 			phone,
 			bloodType,
 			location: {
@@ -25,13 +45,16 @@ export const registerDonor = async (req, res) => {
 
 		await donor.save();
 
+		await session.commitTransaction();
 		// Send welcome message
 		await sendSMS(
 			phone,
 			`Thank you for registering with iDonat! You're now part of our life-saving community.`
 		);
 
-		res.status(201).json(donor);
+		res
+			.status(201)
+			.json({ user, donor, nextOfKin, message: 'Registration successful' });
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}

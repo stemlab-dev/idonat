@@ -133,11 +133,16 @@ export const roleBasedLogin = async (req, res) => {
 };
 // // signinUser
 export const signinUser = async (req, res) => {
-	const { name, email, password } = req.body;
+	const { name, email, phone, password } = req.body;
 	try {
+		// CHECK FOR EMAIL OR PHONE
 		const existingUser = await User.findOne({ email });
+		const existingPhone = await User.findOne({ phone });
 
 		// To handle the 409 status code, typically indicating a conflict, you might want to implement it in scenarios where there's a conflict with the current state of the resource.
+		if (existingPhone) {
+			return res.status(409).json({ error: 'Phone Number already Exists' });
+		}
 		// For example, if you're trying to create a new user with an email or username that already exists, it would result in a conflict.
 		if (existingUser) {
 			return res.status(409).json({ error: 'Email Address already Exists' });
@@ -148,17 +153,30 @@ export const signinUser = async (req, res) => {
 		const user = await User.create({
 			name,
 			email,
+			phone,
 			password: hashedPassword,
 		});
 		// Remove password from the response
 		user.password = undefined;
+		const { accessToken, refreshToken } = await createTokens(user._id);
 
-		res.status(200).json({
-			user,
-			statusCode: 200,
-			success: true,
-			message: 'Account created successfully, Login to continue',
-		});
+		const options = {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+		};
+
+		return res
+			.status(200)
+			.cookie('accessToken', accessToken, options) // set the access token in the cookie
+			.cookie('refreshToken', refreshToken, options)
+			.json({
+				user,
+				accessToken,
+				refreshToken,
+				statusCode: 200,
+				success: true,
+				message: 'Account created successfully, Login to continue',
+			});
 	} catch (error) {
 		console.error('Error in signinUser:', error);
 		res.status(500).json({ error: 'Internal server error' });
@@ -418,7 +436,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 			incomingRefreshToken,
 			process.env.REFRESH_TOKEN_SECRET
 		);
-		const user = await User.findById(decodedToken?._id);
+		const user = await User.findById(decodedToken?._id).select('-password');
 		if (!user) {
 			throw new ApiError(401, 'Invalid refresh token');
 		}
@@ -446,6 +464,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 			.json({
 				accessToken,
 				refreshToken: newRefreshToken,
+				user,
 				message: 'Access token refreshed',
 			});
 	} catch (error) {

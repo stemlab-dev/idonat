@@ -1,19 +1,47 @@
 import mongoose from 'mongoose';
 
 const donorSchema = new mongoose.Schema({
-	name: {
-		type: String,
+	userId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User',
 		required: true,
-	},
-	phone: {
-		type: String,
-		required: true,
-		unique: true,
 	},
 	bloodType: {
 		type: String,
 		required: true,
 		enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
+	},
+	weight: {
+		type: String,
+	},
+	height: {
+		type: String,
+	},
+	note: {
+		type: String,
+	},
+	dateOfBirth: {
+		type: Date,
+		default: Date.now,
+	},
+	medicalConditions: [
+		{
+			type: String,
+		},
+	],
+	medications: [
+		{
+			type: String,
+		},
+	],
+	allergies: [
+		{
+			type: String,
+		},
+	],
+	isEligible: {
+		type: Boolean,
+		default: true,
 	},
 	location: {
 		type: {
@@ -25,7 +53,6 @@ const donorSchema = new mongoose.Schema({
 			required: true,
 		},
 	},
-	lastDonationDate: Date,
 	donationCount: {
 		type: Number,
 		default: 0,
@@ -42,6 +69,10 @@ const donorSchema = new mongoose.Schema({
 		default: true,
 	},
 	registrationDate: {
+		type: Date,
+		default: Date.now,
+	},
+	lastDonationDate: {
 		type: Date,
 		default: Date.now,
 	},

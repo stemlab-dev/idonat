@@ -30,7 +30,7 @@ export const redeemReward = async (req, res) => {
 		const { userId, rewardId } = req.body;
 
 		// Verify user exists and get token balance
-		const user = await Donor.findById(userId);
+		const user = await Donor.findOne({userId});
 		if (!user) {
 			return res.status(404).json({ message: 'User not found' });
 		}

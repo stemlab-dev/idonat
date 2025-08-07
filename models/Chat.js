@@ -3,7 +3,11 @@ import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema(
 	{
-		role: { type: String, enum: ['user', 'ai', 'system'], required: true },
+		role: {
+			type: String,
+			enum: ['user', 'ai', 'assistant', 'system'],
+			required: true,
+		},
 		content: { type: String, required: true },
 		timestamp: { type: Date, default: Date.now },
 	},

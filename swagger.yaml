@@ -1753,8 +1753,12 @@ paths:
                 message:
                   type: string
                   example: What should I eat before donating blood?
+                sessionToken:
+                  type: string
+                  example: d5b1488d-cfb2-44a8-8a0b-ca9303c7569f
             example:
               message: What should I eat before donating blood?
+              sessionToken: d5b1488d-cfb2-44a8-8a0b-ca9303c7569f
       responses:
         '201':
           description: Create student note

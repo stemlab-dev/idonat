@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 const userAchievementSchema = new mongoose.Schema(
 	{
+		userId: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'Donor',
+			required: true,
+		},
 		user: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: 'Donor',

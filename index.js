@@ -24,6 +24,7 @@ import hospitalRoutes from './routes/hospital.js';
 import bloodRequestRoutes from './routes/bloodRequest.js';
 import leaderboardRoutes from './routes/leaderboard.js';
 import squadRoutes from './routes/squad.js';
+import indexRoutes from './routes/index.js';
 import { matchDonorsToRequests } from './services/aiService.js';
 import errorHandler from './middleware/errorHandler.js'; // In your app.js or server entry point
 import chatRoutes from './routes/chat.js';
@@ -89,6 +90,7 @@ app.use(passport.session()); // persistent login sessions
 
 /* ROUTES */
 // app.use('/api/v1/admins', adminRoutes);
+app.use('/api/v1/index', indexRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/moments', momentRoutes);
 app.use('/api/v1/donors', donorRoutes);
