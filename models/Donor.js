@@ -41,7 +41,7 @@ const donorSchema = new mongoose.Schema({
 	],
 	isEligible: {
 		type: Boolean,
-		default: true,
+		default: false,
 	},
 	location: {
 		type: {

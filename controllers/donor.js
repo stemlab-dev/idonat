@@ -1,65 +1,128 @@
 import mongoose from 'mongoose';
 import Donor from '../models/Donor.js';
 import User from '../models/User.js';
-import NextOfKin from '../models/NextOfKin.js';
+import EmergencyContact from '../models/EmergencyContact.js';
 import { sendSMS } from '../services/notification.js';
+import { getNominatimAddress } from '../utils/location.js';
 
-// Register a new donor
 export const addDonor = async (req, res) => {
 	const session = await mongoose.startSession();
-	session.startTransaction();
+
 	try {
-		const { name, phone, email, bloodType, location, nextOfKins } = req.body;
+		session.startTransaction();
 
-		const existingUser = await User.findOne({ phone });
+		const {
+			medicalInfo,
+			address = {
+				city: 'kano',
+				state: 'kano state',
+				country: 'nigeria',
+			},
+			emergencyContacts,
+		} = req.body;
 
-		// To handle the 409 status code, typically indicating a conflict, you might want to implement it in scenarios where there's a conflict with the current state of the resource.
-		// For example, if you're trying to create a new user with an email or username that already exists, it would result in a conflict.
-		if (existingUser) {
-			return res.status(409).json({ error: 'Phone already Exists' });
+		const userId = req.user._id;
+
+		// Validate required fields
+		if (
+			!medicalInfo?.bloodType ||
+			!address?.city ||
+			!address?.state ||
+			!address?.country
+		) {
+			throw new Error('Missing required fields');
 		}
 
-		const hashedPassword = await hash(password);
+		if (!emergencyContacts || emergencyContacts.length === 0) {
+			throw new Error('At least one emergency contact is required');
+		}
 
-		const user = await User.create({
-			name,
-			email,
-			phone,
-			password: hashedPassword,
-			role: 'USER',
-		});
-		const nextOfKin = await NextOfKin.create({
-			userId: user._id,
-			contacts: nextOfKins,
-		});
+		const user = await User.findById(userId).session(session);
+		if (!user) {
+			throw new Error('User not found');
+		}
 
-		const donor = new Donor({
-			userId: user._id,
-			phone,
-			bloodType,
-			location: {
-				type: 'Point',
-				coordinates: [location.longitude, location.latitude],
-			},
-		});
+		// Geocode address
+		const location = await getNominatimAddress(address);
+		// console.log('location', location);
+		if (!location) {
+			throw new Error('Could not determine location coordinates');
+		}
 
-		await donor.save();
-
-		await session.commitTransaction();
-		// Send welcome message
-		await sendSMS(
-			phone,
-			`Thank you for registering with iDonat! You're now part of our life-saving community.`
+		// Create emergency contacts
+		const emergencyContact = await EmergencyContact.create(
+			[
+				{
+					userId,
+					contacts: emergencyContacts,
+				},
+			],
+			{ session }
 		);
 
-		res
-			.status(201)
-			.json({ user, donor, nextOfKin, message: 'Registration successful' });
+		// Create donor record
+		const donor = await Donor.create(
+			[
+				{
+					userId,
+					...medicalInfo,
+					location: {
+						type: 'Point',
+						coordinates: [location.longitude, location.latitude],
+					},
+					lastUpdated: new Date(),
+				},
+			],
+			{ session }
+		);
+
+		user.medInforCompleted = true;
+		user.role = 'DONOR'; // Ensure role is updated
+		await user.save({ session });
+
+		await session.commitTransaction();
+
+		// Send welcome message (async - don't await)
+		// if (user.phone) {
+		// 	sendSMS(
+		// 		user.phone,
+		// 		`Thank you ${user.name} for registering with iDonat! You're now part of our life-saving community.`
+		// 	).catch(console.error); // Don't fail if SMS fails
+		// }
+
+		res.status(200).json({
+			success: true,
+			donor: donor[0],
+			emergencyContact: emergencyContact[0],
+			message: 'Registration successful',
+		});
+	} catch (error) {
+		await session.abortTransaction();
+
+		console.error('Donor registration error:', error);
+		res.status(error.name === 'ValidationError' ? 400 : 500).json({
+			success: false,
+			message: error.message || 'Registration failed',
+			...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
+		});
+	} finally {
+		session.endSession();
+	}
+};
+// Get all active donors
+export const getDonorInfo = async (req, res) => {
+	try {
+		// const upcomingSlots = await Donor.findOne({ isActive: true });
+		// const donationHistory = await Donor.findOne({ isActive: true });
+		const upcomingSlots = [];
+		const donationHistory = [];
+		const donor = await Donor.findOne({ userId: req.user._id });
+		const user = await User.findById(req.user._id).select('-password');
+		res.status(200).json({ user, donor, upcomingSlots, donationHistory });
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
 };
-
 // Get all active donors
 export const getActiveDonors = async (req, res) => {
 	try {

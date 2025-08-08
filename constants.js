@@ -4,6 +4,7 @@
 export const UserRolesEnum = {
 	SUPER_ADMIN: 'SUPER_ADMIN',
 	ADMIN: 'ADMIN',
+	DONOR: 'DONOR',
 	HOSPITAL: 'HOSPITAL',
 	USER: 'USER',
 };

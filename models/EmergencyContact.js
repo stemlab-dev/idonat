@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const NextOfKinSchema = new mongoose.Schema({
+const EmergencyContactSchema = new mongoose.Schema({
 	userId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
@@ -30,6 +30,6 @@ const NextOfKinSchema = new mongoose.Schema({
 	],
 });
 
-const NextOfKin = mongoose.model('NextOfKin', NextOfKinSchema);
+const EmergencyContact = mongoose.model('EmergencyContact', EmergencyContactSchema);
 
-export default NextOfKin;
+export default EmergencyContact;

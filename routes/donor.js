@@ -5,14 +5,17 @@ import {
 	updateDonor,
 	addDonorReward,
 	addDonor,
+	getDonorInfo,
 } from '../controllers/donor.js';
+import { requireAuth, verifyPermission } from '../middleware/requireAuth.js';
 
 const router = express.Router();
 
-router.post('/', addDonor);
-router.get('/', getActiveDonors);
+router.put('/medical-info', requireAuth, addDonor);
+router.get('/', requireAuth,  getDonorInfo);
+router.get('/active', getActiveDonors);
 router.get('/search', getDonorsByBloodType);
-router.put('/:id', updateDonor);
-router.post('/:id/rewards', addDonorReward);
+router.put('/:id', requireAuth, updateDonor);
+router.post('/:id/rewards', requireAuth, addDonorReward);
 
 export default router;

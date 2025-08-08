@@ -32,13 +32,35 @@ const UserSchema = new mongoose.Schema(
 				type: String,
 			},
 		},
+		address: {
+			street: {
+				type: String,
+			},
+			city: {
+				type: String,
+			},
+			state: {
+				type: String,
+			},
+			country: {
+				type: String,
+			},
+		},
 		inforCompleted: {
-			type: Number,
-			default: 0,
+			type: Boolean,
+			default: false,
+		},
+		medInforCompleted: {
+			type: Boolean,
+			default: false,
+		},
+		dateOfBirth: {
+			type: Date,
+			default: Date.now,
 		},
 		role: {
 			type: String,
-			enum: ['USER', 'HOSPITAL', 'ADMIN', 'SUPER_ADMIN'],
+			enum: ['USER', 'DONOR', 'HOSPITAL', 'ADMIN', 'SUPER_ADMIN'],
 			default: 'USER',
 		},
 		isVerified: {

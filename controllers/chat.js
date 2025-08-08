@@ -14,7 +14,7 @@ export const sendMessage = async (req, res) => {
 				return res.status(404).json({ error: 'Session not found' });
 			}
 		}
-		console.log('Session:', session);
+		// console.log('Session:', session);
 		// Store user message
 		const chatRes = await ChatService.completeChatCycle(
 			userId,

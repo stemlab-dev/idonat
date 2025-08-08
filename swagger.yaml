@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Gbono
+  title: iDonat
   description: >-
-    # Gbono api documentation
+    # iDonat api documentation
   version: 1.0.0
   contact: { email: ammuftau74@gmail.com }
 

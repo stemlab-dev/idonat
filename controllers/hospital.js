@@ -6,27 +6,69 @@ import UserAchievement from '../models/UserAchievment.js';
 import Hospital from '../models/Hospital.js';
 import BloodRequest from '../models/BloodRequest.js';
 import { predictShortage } from '../services/aiService.js';
+import { hash } from '../utils/hash.js';
 
 // Register a new hospital
 export const registerHospital = async (req, res) => {
+	const session = await mongoose.startSession();
+
 	try {
-		const { name, address, location, contactPhone, contactEmail } = req.body;
+		session.startTransaction();
+		const { name, address, phone, email, password = '123456' } = req.body;
 
-		const hospital = new Hospital({
-			name,
-			address,
-			location: {
-				type: 'Point',
-				coordinates: [location.longitude, location.latitude],
-			},
-			contactPhone,
-			contactEmail,
-		});
+		const hashedPassword = await hash(password);
 
-		await hospital.save();
+		const user = await User.create(
+			[
+				{
+					name,
+					address,
+					phone,
+					email,
+					password: hashedPassword,
+					role: 'HOSPITAL',
+				},
+			],
+			{ session }
+		);
+		// Geocode address
+		const location = await getNominatimAddress(address);
+		console.log('location', location);
+		if (!location) {
+			throw new Error('Could not determine location coordinates');
+		}
+
+		const hospital = new Hospital(
+			[
+				{
+					name,
+					address,
+					location: {
+						type: 'Point',
+						coordinates: [location.longitude, location.latitude],
+					},
+					contactPhone: phone,
+					contactEmail: email,
+				},
+			],
+			{ session }
+		);
+
+		await hospital.save({ session });
+
+		await session.commitTransaction();
 		res.status(201).json(hospital);
 	} catch (error) {
-		res.status(500).json({ message: error.message });
+		await session.abortTransaction();
+
+		console.error('Donor registration error:', error);
+		res.status(error.name === 'ValidationError' ? 400 : 500).json({
+			success: false,
+			message: error.message || 'Registration failed',
+			...(process.env.NODE_ENV === 'development' && { stack: error.stack }),
+		});
+	} finally {
+		session.endSession();
 	}
 };
 

@@ -12,6 +12,7 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { hash, verifyHash } from '../utils/hash.js';
 import sendEmail from '../utils/sendEmail.js';
 import { ApiError } from '../utils/ApiError.js';
+import Donor from '../models/Donor.js';
 
 const createToken = (_id, time) => {
 	return jwt.sign({ _id }, process.env.SECRET, { expiresIn: time || '1d' });
@@ -432,6 +433,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 	}
 
 	try {
+		// console.log('incomingRefreshToken', incomingRefreshToken);
 		const decodedToken = jwt.verify(
 			incomingRefreshToken,
 			process.env.REFRESH_TOKEN_SECRET
@@ -612,6 +614,7 @@ export const updateProfile = async (req, res) => {
 		const disAllowedFields = ['password', 'role'];
 		// Check if request body contains only allowed fields
 		const updates = Object.keys(req.body);
+		// console.log('updates', updates);
 		const isValidOperation = updates.every(
 			(update) => !disAllowedFields.includes(update)
 		);
@@ -636,6 +639,7 @@ export const updateProfile = async (req, res) => {
 			let user = await User.findByIdAndUpdate(id, updateData, { new: true });
 			await fs.unlinkSync(req.file.path);
 
+			user.password = undefined;
 			return res.status(200).json({
 				user,
 				message: 'User profile updated successfully',
@@ -646,6 +650,12 @@ export const updateProfile = async (req, res) => {
 				{ ...req.body },
 				{ new: true }
 			);
+			user.password = undefined;
+			const donor = await Donor.findOne({ userId: id });
+			if (donor) {
+				donor.dateOfBirth = req.body.dateOfBirth || donor.dateOfBirth;
+				await donor.save();
+			}
 			return res.status(200).json({
 				user,
 				message: 'User profile updated successfully',
