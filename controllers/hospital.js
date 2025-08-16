@@ -14,7 +14,16 @@ export const registerHospital = async (req, res) => {
 
 	try {
 		session.startTransaction();
-		const { name, address, phone, email, password = '123456' } = req.body;
+		const {
+			hospitalName,
+			name,
+			address,
+			phone,
+			email,
+			contactPhone,
+			contactEmail,
+			password = '123456',
+		} = req.body;
 
 		const hashedPassword = await hash(password);
 
@@ -22,7 +31,6 @@ export const registerHospital = async (req, res) => {
 			[
 				{
 					name,
-					address,
 					phone,
 					email,
 					password: hashedPassword,
@@ -41,14 +49,14 @@ export const registerHospital = async (req, res) => {
 		const hospital = new Hospital(
 			[
 				{
-					name,
+					name: hospitalName,
 					address,
 					location: {
 						type: 'Point',
 						coordinates: [location.longitude, location.latitude],
 					},
-					contactPhone: phone,
-					contactEmail: email,
+					contactPhone,
+					contactEmail,
 				},
 			],
 			{ session }
@@ -61,7 +69,7 @@ export const registerHospital = async (req, res) => {
 	} catch (error) {
 		await session.abortTransaction();
 
-		console.error('Donor registration error:', error);
+		console.error('Hospital registration error:', error);
 		res.status(error.name === 'ValidationError' ? 400 : 500).json({
 			success: false,
 			message: error.message || 'Registration failed',
@@ -88,6 +96,22 @@ export const getHospitalDashboard = async (req, res) => {
 
 		res.json({ userAchievements, squad, donor });
 	} catch (error) {
+		res.status(500).json({ message: error.message });
+	}
+};
+export const getHospitalDetails = async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		const metricsData = {};
+		const hospitalData = await Hospital.findById(req.params.id);
+
+		res.json({
+			hospitalData,
+			metricsData,
+		});
+	} catch (error) {
+		console.log('error', error);
 		res.status(500).json({ message: error.message });
 	}
 };

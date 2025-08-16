@@ -5,6 +5,7 @@ import {
 	createBloodRequest,
 	getHospitalRequests,
 	getHospitalDashboard,
+	getHospitalDetails,
 } from '../controllers/hospital.js';
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.get('/dashboard', getHospitalDashboard);
 router.put('/:id/inventory', updateInventory);
 router.post('/:id/requests', createBloodRequest);
 router.get('/:id/requests', getHospitalRequests);
+router.get('/:id', getHospitalDetails);
 
 export default router;

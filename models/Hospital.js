@@ -1,6 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema} from 'mongoose';
 
 const hospitalSchema = new mongoose.Schema({
+	userId: {
+		type: Schema.Types.ObjectId,
+		ref: 'User',
+		required: true,
+	},
 	name: {
 		type: String,
 		required: true,

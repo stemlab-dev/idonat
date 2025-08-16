@@ -206,6 +206,7 @@ export const addDonorReward = async (req, res) => {
 
 		res.json(donor);
 	} catch (error) {
+		console.log('error', error);
 		res.status(500).json({ message: error.message });
 	}
 };

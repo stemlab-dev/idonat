@@ -32,11 +32,12 @@ export const getAdminDashboard = async (req, res) => {
 		const donor = await Donor.findOne({
 			user: userId,
 		});
+		const users = User.find().select('-password -refreshToken -loginType');
 		const userAchievements = await UserAchievement.findOne({
 			user: userId,
 		}).populate('achievement');
 
-		res.json({ userAchievements, squad, donor });
+		res.json({ users, userAchievements, squad, donor });
 	} catch (error) {
 		res.status(500).json({ message: error.message });
 	}
